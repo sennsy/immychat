@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>immychat</title>
+    <link rel="icon" href="logo.jpg">
+    <link rel="stylesheet" href="style.css">
+    <link rel="manifest" href="manifest.json">
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+    
+    <!-- Firebase (Menggunakan versi Compat agar mudah tanpa bundler Node.js) -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-storage-compat.js"></script>
+    
+    <!-- PeerJS untuk fitur Voice & Video Call gratis -->
+    <script src="https://unpkg.com/peerjs@1.4.7/dist/peerjs.min.js"></script>
+</head>
+<body>
+    <!-- Custom Cursor -->
+    <div class="cursor" id="cursor"></div>
+
+    <!-- Peringatan / Toast -->
+    <div id="toast" class="toast hidden"></div>
+
+    <!-- Layar Login -->
+    <div id="login-screen" class="screen active">
+        <div class="login-container">
+            <img src="logo.jpg" alt="immychat logo" class="brand-logo-large">
+            <h1>IMMYCHAT</h1>
+            <p>who are you?</p>
+            <input type="text" id="username-input" placeholder="type your username..." autocomplete="off">
+            <p class="hint">Press Enter to continue</p>
+        </div>
+    </div>
+
+    <!-- Layar Utama App -->
+    <div id="app-screen" class="screen hidden">
+        <!-- Sidebar Kiri: Daftar Room -->
+        <div class="sidebar">
+            <div class="sidebar-header">
+                <div class="brand-sidebar">
+                    <img src="logo.jpg" alt="logo" class="brand-logo-small">
+                    <h2 id="current-user-display">user</h2>
+                </div>
+                <button id="logout-btn" class="minimal-btn">/exit</button>
+            </div>
+            
+            <div id="admin-panel" class="hidden">
+                <h3>[ ADMIN CONTROLS ]</h3>
+                <input type="text" id="new-room-input" placeholder="new room name...">
+                <button id="create-room-btn" class="minimal-btn">+ create room</button>
+            </div>
+
+            <div class="room-list-container">
+                <h3>[ ROOMS ]</h3>
+                <ul id="room-list">
+                    <!-- Room akan muncul di sini -->
+                </ul>
+            </div>
+        </div>
+
+        <!-- Area Chat Kanan -->
+        <div class="chat-area">
+            <!-- Header Chat -->
+            <div class="chat-header">
+                <h1 id="active-room-name">/select_room</h1>
+                <div class="call-controls hidden" id="call-controls">
+                    <button id="voice-call-btn" class="minimal-btn">[ VOICE ]</button>
+                    <button id="video-call-btn" class="minimal-btn">[ VIDEO ]</button>
+                </div>
+            </div>
+
+            <!-- Pesan Chat -->
+            <div id="chat-messages" class="chat-messages">
+                <div class="placeholder-text">no room selected.</div>
+            </div>
+
+            <!-- Input Pesan -->
+            <div class="chat-input-container hidden" id="chat-input-container">
+                <input type="file" id="file-input" class="hidden">
+                <button id="attach-btn" class="minimal-btn" style="border:none; font-size:1.5rem; padding:0 5px;" title="Attach File">📎</button>
+                <input type="text" id="message-input" placeholder="type a message..." autocomplete="off">
+                <button id="send-btn">send</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Overlay Video Call -->
+    <div id="call-overlay" class="call-overlay hidden">
+        <h2 class="blinking" id="call-status">CONNECTING...</h2>
+        <div class="video-grid">
+            <video id="local-video" autoplay muted playsinline></video>
+            <video id="remote-video" autoplay playsinline></video>
+        </div>
+        <div class="call-actions">
+            <button id="share-screen-btn" class="minimal-btn share-screen">💻 Share Screen</button>
+            <button id="end-call-btn" class="minimal-btn end-call">❌ END CALL</button>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+    <script>
+        // PWA Service Worker Registration
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('./sw.js').then(reg => {
+                    console.log('ServiceWorker registered');
+                });
+            });
+        }
+    </script>
+</body>
+</html>
